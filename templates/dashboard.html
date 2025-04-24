@@ -1,0 +1,322 @@
+{% extends "base.html" %} {% block title %}Dashboard - Auto Insurance Liability
+AI System{% endblock %} {% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="section-title">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+        </h2>
+        <p class="lead">Welcome back, {{ user.name }}!</p>
+    </div>
+    <div class="col-auto">
+        <a href="{{ url_for('analyze') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i>New Analysis
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- User Profile Card -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div
+                class="card-header d-flex justify-content-between align-items-center"
+            >
+                <h5 class="mb-0">
+                    <i class="fas fa-user-circle me-2"></i>Profile
+                </h5>
+                <a
+                    href="{{ url_for('profile_edit') }}"
+                    class="btn btn-sm btn-outline-primary"
+                    >Edit</a
+                >
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div
+                        class="avatar mx-auto"
+                        style="width: 100px; height: 100px; font-size: 2.5rem"
+                    >
+                        {{ user.name[:1] }}
+                    </div>
+                    <h4 class="mt-3">{{ user.name }}</h4>
+                    <p class="text-muted">{{ user.email }}</p>
+                </div>
+
+                <hr />
+
+                <div class="mb-3">
+                    <h6>
+                        <i class="fas fa-calendar-alt me-2"></i>Customer Since
+                    </h6>
+                    <p>{{ user.years_as_customer }} years</p>
+                </div>
+
+                <div class="mb-3">
+                    <h6><i class="fas fa-car me-2"></i>Vehicle</h6>
+                    <p>
+                        {{ user.vehicle.year }} {{ user.vehicle.make }} {{
+                        user.vehicle.model }}
+                    </p>
+                </div>
+
+                <div>
+                    <h6>
+                        <i class="fas fa-shield-alt me-2"></i>Other Policies
+                    </h6>
+                    {% if user.other_policies %}
+                    <ul class="list-unstyled">
+                        {% for policy in user.other_policies %}
+                        <li>
+                            <i
+                                class="fas fa-check-circle text-success me-1"
+                            ></i>
+                            {{ policy|replace('_', ' ')|title }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">No additional policies</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="col-md-8 mb-4">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div
+                            class="d-flex justify-content-between align-items-center mb-3"
+                        >
+                            <h5 class="card-title mb-0">Driving Record</h5>
+                            <span class="fs-1 text-primary">
+                                <i class="fas fa-car"></i>
+                            </span>
+                        </div>
+                        <h3 class="mb-3">
+                            {% if user.driving_record.accidents == 0 and
+                            user.driving_record.violations <= 1 %}
+                            <span class="text-success">Excellent</span>
+                            {% elif user.driving_record.accidents <= 1 and
+                            user.driving_record.violations <= 2 %}
+                            <span class="text-warning">Good</span>
+                            {% else %}
+                            <span class="text-danger">Needs Improvement</span>
+                            {% endif %}
+                        </h3>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Accidents</span>
+                                <span class="fw-bold"
+                                    >{{ user.driving_record.accidents }}</span
+                                >
+                            </div>
+                            <div class="progress mb-3" style="height: 8px">
+                                <div
+                                    class="progress-bar bg-primary"
+                                    role="progressbar"
+                                    style="width: {{ user.driving_record.accidents * 20 }}%"
+                                    aria-valuenow="{{ user.driving_record.accidents }}"
+                                    aria-valuemin="0"
+                                    aria-valuemax="5"
+                                ></div>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Violations</span>
+                                <span class="fw-bold"
+                                    >{{ user.driving_record.violations }}</span
+                                >
+                            </div>
+                            <div class="progress" style="height: 8px">
+                                <div
+                                    class="progress-bar bg-info"
+                                    role="progressbar"
+                                    style="width: {{ user.driving_record.violations * 20 }}%"
+                                    aria-valuenow="{{ user.driving_record.violations }}"
+                                    aria-valuemin="0"
+                                    aria-valuemax="5"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div
+                            class="d-flex justify-content-between align-items-center mb-3"
+                        >
+                            <h5 class="card-title mb-0">Vehicle Value</h5>
+                            <span class="fs-1 text-secondary">
+                                <i class="fas fa-car-side"></i>
+                            </span>
+                        </div>
+                        <h3 class="mb-3">
+                            ${{ '{:,.0f}'.format(user.vehicle.value) }}
+                        </h3>
+                        <div class="mt-3">
+                            <div class="progress mb-2" style="height: 8px">
+                                <div
+                                    class="progress-bar bg-success"
+                                    role="progressbar"
+                                    style="width: 75%"
+                                ></div>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="small text-muted"
+                                    >{{ user.vehicle.year }} Model</span
+                                >
+                                <span class="small text-muted"
+                                    >Depreciating 10%/year</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div
+                            class="d-flex justify-content-between align-items-center mb-3"
+                        >
+                            <h5 class="card-title mb-0">Potential Savings</h5>
+                            <span class="fs-1 text-success">
+                                <i class="fas fa-piggy-bank"></i>
+                            </span>
+                        </div>
+                        <h3 class="mb-3">$320/year</h3>
+                        <p class="mb-0">
+                            Bundle discount opportunities available
+                        </p>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-success">
+                                View Savings Options
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div
+                            class="d-flex justify-content-between align-items-center mb-3"
+                        >
+                            <h5 class="card-title mb-0">Risk Profile</h5>
+                            <span class="fs-1 text-info">
+                                <i class="fas fa-chart-line"></i>
+                            </span>
+                        </div>
+                        <h3 class="mb-3">
+                            {% if user.driving_record.accidents == 0 %}
+                            <span class="text-success">Low</span>
+                            {% elif user.driving_record.accidents == 1 %}
+                            <span class="text-warning">Moderate</span>
+                            {% else %}
+                            <span class="text-danger">High</span>
+                            {% endif %}
+                        </h3>
+                        <p class="mb-0">
+                            Based on driving history and vehicle data
+                        </p>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-info">
+                                View Risk Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div
+                class="card-header d-flex justify-content-between align-items-center"
+            >
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i>Recent Activity
+                </h5>
+                <button class="btn btn-sm btn-outline-primary">View All</button>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Case ID</th>
+                                <th>Date</th>
+                                <th>Scenario Type</th>
+                                <th>Risk Level</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in history %}
+                            <tr>
+                                <td>{{ item.id }}</td>
+                                <td>{{ item.date }}</td>
+                                <td>
+                                    {{ item.scenario_type|replace('_', '
+                                    ')|title }}
+                                </td>
+                                <td>
+                                    <span
+                                        class="risk-badge {{ item.risk_level }}"
+                                    >
+                                        {{ item.risk_level|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if item.status == 'resolved' %}
+                                    <span class="badge bg-success"
+                                        >Resolved</span
+                                    >
+                                    {% elif item.status == 'pending' %}
+                                    <span class="badge bg-warning text-dark"
+                                        >Pending</span
+                                    >
+                                    {% else %}
+                                    <span class="badge bg-info"
+                                        >{{ item.status|title }}</span
+                                    >
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary"
+                                            title="View Details"
+                                        >
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            title="Download Report"
+                                        >
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

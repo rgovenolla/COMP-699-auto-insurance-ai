@@ -1,0 +1,220 @@
+{% extends "base.html" %} {% block title %}Edit Profile - Auto Insurance
+Liability AI System{% endblock %} {% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div
+                class="card-header d-flex justify-content-between align-items-center"
+            >
+                <h4 class="mb-0">
+                    <i class="fas fa-user-edit me-2"></i>Edit Profile
+                </h4>
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="btn btn-outline-primary btn-sm"
+                >
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{{ url_for('profile_edit') }}">
+                    <div class="row mb-4">
+                        <div class="col-md-4 text-center">
+                            <div
+                                class="avatar mx-auto mb-3"
+                                style="
+                                    width: 120px;
+                                    height: 120px;
+                                    font-size: 3rem;
+                                "
+                            >
+                                {{ user.name[:1] }}
+                            </div>
+                            <p class="mb-0">User ID: {{ user.id }}</p>
+                            <p class="text-muted">
+                                Member since {{ user.years_as_customer }} years
+                            </p>
+                        </div>
+
+                        <div class="col-md-8">
+                            <h5 class="section-title">Personal Information</h5>
+
+                            <div class="mb-3">
+                                <label for="name" class="form-label"
+                                    >Full Name</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="name"
+                                    name="name"
+                                    value="{{ user.name }}"
+                                    required
+                                />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label"
+                                    >Email Address</label
+                                >
+                                <input
+                                    type="email"
+                                    class="form-control"
+                                    id="email"
+                                    name="email"
+                                    value="{{ user.email }}"
+                                    required
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="section-title">Security</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label"
+                                >New Password</label
+                            >
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="password"
+                                name="password"
+                            />
+                            <div class="form-text">
+                                Leave blank to keep your current password
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="confirm_password" class="form-label"
+                                >Confirm New Password</label
+                            >
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="confirm_password"
+                                name="confirm_password"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="current_password" class="form-label"
+                            >Current Password</label
+                        >
+                        <input
+                            type="password"
+                            class="form-control"
+                            id="current_password"
+                            name="current_password"
+                        />
+                        <div class="form-text">
+                            Required to confirm any changes to your profile
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a
+                            href="{{ url_for('profile_setup') }}"
+                            class="btn btn-outline-primary"
+                        >
+                            <i class="fas fa-car me-2"></i>Update Vehicle &
+                            Insurance Info
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Account Settings</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h6>Communication Preferences</h6>
+                    <div class="form-check form-switch">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="email_notifications"
+                            checked
+                        />
+                        <label
+                            class="form-check-label"
+                            for="email_notifications"
+                            >Email Notifications</label
+                        >
+                    </div>
+                    <div class="form-check form-switch">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="text_notifications"
+                        />
+                        <label class="form-check-label" for="text_notifications"
+                            >Text Notifications</label
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <h6>Privacy Options</h6>
+                    <div class="form-check form-switch">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="data_sharing"
+                            checked
+                        />
+                        <label class="form-check-label" for="data_sharing"
+                            >Data Sharing for Improved Analysis</label
+                        >
+                    </div>
+                    <div class="form-check form-switch">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="analytics_cookies"
+                            checked
+                        />
+                        <label class="form-check-label" for="analytics_cookies"
+                            >Analytics Cookies</label
+                        >
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="button" class="btn btn-outline-danger">
+                    <i class="fas fa-trash-alt me-2"></i>Delete Account
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordField = document.getElementById("password");
+        const confirmPasswordField =
+            document.getElementById("confirm_password");
+        const form = document.querySelector("form");
+
+        form.addEventListener("submit", function (event) {
+            // Check if new password fields match
+            if (
+                passwordField.value &&
+                passwordField.value !== confirmPasswordField.value
+            ) {
+                event.preventDefault();
+                alert("New passwords do not match!");
+            }
+        });
+    });
+</script>
+{% endblock %}

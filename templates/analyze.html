@@ -1,0 +1,143 @@
+{% extends "base.html" %} {% block title %}New Analysis - Auto Insurance
+Liability AI System{% endblock %} {% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="mb-3"><i class="fas fa-search me-2"></i>New Analysis</h2>
+        <p class="lead">
+            Describe the insurance scenario in detail for the most accurate
+            assessment.
+        </p>
+    </div>
+    <div class="col-auto">
+        <a
+            href="{{ url_for('sample_scenarios') }}"
+            class="btn btn-outline-primary"
+        >
+            <i class="fas fa-list me-2"></i>Sample Scenarios
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow">
+    <div class="card-body p-4">
+        <form
+            method="post"
+            action="{{ url_for('analyze') }}"
+            enctype="multipart/form-data"
+        >
+            <div class="mb-4">
+                <label for="scenario_text" class="form-label"
+                    >Scenario Description</label
+                >
+                <textarea
+                    class="form-control"
+                    id="scenario_text"
+                    name="scenario_text"
+                    rows="8"
+                    placeholder="Describe what happened in as much detail as possible..."
+                    required
+                ></textarea>
+                <div class="form-text">
+                    Include details such as: when and where the incident
+                    occurred, weather conditions, involved parties, extent of
+                    damages, and any other relevant information.
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="scenario_file" class="form-label"
+                    >Upload Supporting Documents (Optional)</label
+                >
+                <input
+                    class="form-control"
+                    type="file"
+                    id="scenario_file"
+                    name="scenario_file"
+                />
+                <div class="form-text">
+                    You can upload police reports, photos, or other relevant
+                    documents (max 16MB). Supported formats: .txt, .pdf, .jpg,
+                    .jpeg, .png
+                </div>
+            </div>
+
+            <div class="card bg-light mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">For Best Results:</h5>
+                    <ul class="mb-0">
+                        <li>
+                            Be specific about the circumstances of the incident
+                        </li>
+                        <li>
+                            Include details about vehicle damage and any
+                            injuries
+                        </li>
+                        <li>
+                            Mention weather conditions and visibility if
+                            relevant
+                        </li>
+                        <li>
+                            Describe the location (highway, parking lot,
+                            residential area)
+                        </li>
+                        <li>
+                            Include information about other parties involved
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="reset" class="btn btn-outline-secondary">
+                    <i class="fas fa-undo me-2"></i>Reset
+                </button>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-search me-2"></i>Analyze Scenario
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Examples Section -->
+<div class="mt-5">
+    <h3 class="mb-4">Example Descriptions</h3>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Good Example</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        I was driving my 2019 Toyota Camry northbound on Main
+                        Street on January 15th at around 3:30 PM. It was raining
+                        lightly and visibility was good. I was stopped at a red
+                        light when a blue Honda Civic rear-ended my vehicle. The
+                        impact was moderate, causing visible damage to my rear
+                        bumper. I exchanged information with the other driver,
+                        who admitted fault. I'm experiencing mild neck pain
+                        since the accident. Police report #A-12345 was filed at
+                        the scene.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Poor Example</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        My car got hit yesterday. There's some damage. Need to
+                        know if insurance covers it.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

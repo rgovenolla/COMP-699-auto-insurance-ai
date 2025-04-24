@@ -1,0 +1,210 @@
+{% extends "base.html" %} {% block title %}API Documentation - Auto Insurance
+Liability AI System{% endblock %} {% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="mb-3"><i class="fas fa-code me-2"></i>API Documentation</h2>
+        <p class="lead">
+            Integrate our AI system with your applications using our RESTful
+            API.
+        </p>
+    </div>
+</div>
+
+<div class="card border-0 shadow mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Overview</h4>
+    </div>
+    <div class="card-body">
+        <p>
+            The Auto Insurance Liability AI System API provides programmatic
+            access to our classification, analysis, and recommendation
+            capabilities. This allows you to integrate our system with your
+            existing insurance management software.
+        </p>
+        <div class="alert alert-info">
+            <h5><i class="fas fa-info-circle me-2"></i>Base URL</h5>
+            <code class="user-select-all">https://your-domain.com/api</code>
+        </div>
+        <h5>Authentication</h5>
+        <p>
+            All API requests require authentication using an API key. Include
+            your API key in the <code>X-API-Key</code> header with each request.
+        </p>
+        <pre
+            class="bg-light p-3 rounded"
+        ><code>X-API-Key: your_api_key_here</code></pre>
+    </div>
+</div>
+
+<div class="card border-0 shadow mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Endpoints</h4>
+    </div>
+    <div class="card-body p-0">
+        <!-- Analyze Endpoint -->
+        <div class="p-4 border-bottom">
+            <h4>Analyze Scenario</h4>
+            <div class="mb-3">
+                <span class="badge bg-success">POST</span>
+                <code class="ms-2 user-select-all">/api/analyze</code>
+            </div>
+            <p>
+                Analyzes an insurance scenario and returns classification, risk
+                assessment, and recommendations.
+            </p>
+
+            <h5>Request</h5>
+            <pre class="bg-light p-3 rounded"><code>{
+  "scenario_text": "I was stopped at a red light when another driver rear-ended my car...",
+  "include_explanation": true,
+  "include_recommendations": true,
+  "user_profile": {  // Optional
+    "id": "user123",
+    "years_as_customer": 4,
+    "driving_record": {
+      "accidents": 0,
+      "violations": 1
+    }
+  }
+}</code></pre>
+
+            <h5>Response</h5>
+            <pre class="bg-light p-3 rounded"><code>{
+  "classification": {
+    "category": "collision",
+    "confidence": 0.92,
+    "relevant_policies": ["liability", "collision"],
+    "reasoning": "Scenario describes a rear-end collision incident"
+  },
+  "policy_analysis": {
+    "primary_coverage": "liability",
+    "secondary_coverage": ["collision"],
+    "coverage_gaps": [],
+    "recommendations": []
+  },
+  "risk_assessment": {
+    "risk_score": 0.65,
+    "risk_level": "moderate",
+    "identified_factors": ["multiple_vehicles"],
+    "primary_concerns": ["Potential liability for damages"],
+    "financial_impact_estimate": {
+      "low_estimate": 2450.00,
+      "median_estimate": 3500.00,
+      "high_estimate": 4550.00,
+      "currency": "USD"
+    }
+  },
+  "explanation": {
+    "summary": "This collision incident has a moderate risk level. Primary coverage: liability.",
+    "detailed_explanation": "The incident has been classified as a collision scenario with 92% confidence..."
+  },
+  "recommendations": [
+    {
+      "action": "review_deductible",
+      "policy": "collision",
+      "reason": "Optimizing your deductible can balance premium costs with out-of-pocket expenses",
+      "priority": "medium",
+      "confidence": 0.85
+    }
+  ]
+}</code></pre>
+
+            <h5>Error Response</h5>
+            <pre class="bg-light p-3 rounded"><code>{
+  "error": "Error message description"
+}</code></pre>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Code Examples</h4>
+    </div>
+    <div class="card-body">
+        <!-- Python Example -->
+        <h5>Python</h5>
+        <pre class="bg-light p-3 rounded"><code>import requests
+import json
+
+url = "https://your-domain.com/api/analyze"
+api_key = "your_api_key_here"
+
+headers = {
+    "Content-Type": "application/json",
+    "X-API-Key": api_key
+}
+
+data = {
+    "scenario_text": "I was stopped at a red light when another driver rear-ended my car. There was visible damage to my rear bumper.",
+    "include_explanation": True,
+    "include_recommendations": True
+}
+
+response = requests.post(url, headers=headers, json=data)
+result = response.json()
+
+print(json.dumps(result, indent=2))</code></pre>
+
+        <!-- JavaScript Example -->
+        <h5>JavaScript</h5>
+        <pre
+            class="bg-light p-3 rounded"
+        ><code>const analyzeScenario = async () => {
+  const url = 'https://your-domain.com/api/analyze';
+  const apiKey = 'your_api_key_here';
+
+  const data = {
+    scenario_text: 'I was stopped at a red light when another driver rear-ended my car. There was visible damage to my rear bumper.',
+    include_explanation: true,
+    include_recommendations: true
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': apiKey
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    console.log(result);
+
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};</code></pre>
+    </div>
+</div>
+
+<div class="card border-0 shadow">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Rate Limits and Usage</h4>
+    </div>
+    <div class="card-body">
+        <p>
+            The API is rate-limited to ensure fair usage and optimal performance
+            for all users. Standard API keys are limited to 100 requests per
+            hour and 1,000 requests per day.
+        </p>
+        <p>
+            For higher volume requirements, please contact our sales team to
+            discuss enterprise options.
+        </p>
+        <div class="alert alert-warning">
+            <h5>
+                <i class="fas fa-exclamation-triangle me-2"></i>Demo Key
+                Limitations
+            </h5>
+            <p class="mb-0">
+                The demo API key provided has a limit of 10 requests per hour
+                for testing purposes. To get a production API key, please
+                register for an account.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

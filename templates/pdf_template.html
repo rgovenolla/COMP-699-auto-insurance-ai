@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Auto Insurance Analysis Report</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                margin: 0;
+                padding: 0;
+                font-size: 11pt;
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .header {
+                text-align: center;
+                border-bottom: 2px solid #006699;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+            }
+
+            .header h1 {
+                color: #006699;
+                margin-bottom: 0;
+            }
+
+            .header p {
+                margin-top: 5px;
+                color: #666;
+            }
+
+            .section {
+                margin-bottom: 30px;
+            }
+
+            .section-title {
+                background-color: #006699;
+                color: white;
+                padding: 8px 15px;
+                border-radius: 4px;
+                margin-bottom: 15px;
+            }
+
+            .card {
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                padding: 15px;
+                margin-bottom: 15px;
+                background-color: #f9f9f9;
+            }
+
+            .info-row {
+                display: flex;
+                margin-bottom: 10px;
+            }
+
+            .info-label {
+                font-weight: bold;
+                width: 180px;
+                flex-shrink: 0;
+            }
+
+            .info-value {
+                flex-grow: 1;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 15px;
+            }
+
+            table th,
+            table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+            table th {
+                background-color: #f2f2f2;
+            }
+
+            .high-risk {
+                color: #dc3545;
+                font-weight: bold;
+            }
+
+            .moderate-risk {
+                color: #fd7e14;
+                font-weight: bold;
+            }
+
+            .low-risk {
+                color: #28a745;
+                font-weight: bold;
+            }
+
+            .badge {
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-size: 10pt;
+                font-weight: bold;
+                display: inline-block;
+                margin-right: 5px;
+                margin-bottom: 5px;
+            }
+
+            .badge-info {
+                background-color: #17a2b8;
+                color: white;
+            }
+
+            .footer {
+                text-align: center;
+                margin-top: 50px;
+                padding-top: 10px;
+                border-top: 1px solid #ddd;
+                color: #666;
+                font-size: 10pt;
+            }
+
+            .explanation {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 4px;
+                line-height: 1.8;
+            }
+
+            .priority-high {
+                border-left: 4px solid #dc3545;
+                padding-left: 10px;
+            }
+
+            .priority-medium {
+                border-left: 4px solid #fd7e14;
+                padding-left: 10px;
+            }
+
+            .priority-low {
+                border-left: 4px solid #28a745;
+                padding-left: 10px;
+            }
+
+            .scenario-text {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 4px;
+                margin-bottom: 15px;
+                white-space: pre-line;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Auto Insurance Analysis Report</h1>
+                <p>Case ID: {{ results.case_id }} | Date: {{ results.date }}</p>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="section">
+                <h2 class="section-title">Summary</h2>
+                <div class="card">
+                    <div class="info-row">
+                        <div class="info-label">Category:</div>
+                        <div class="info-value">
+                            {{ results.classification.category|replace('_', '
+                            ')|title }}
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Confidence:</div>
+                        <div class="info-value">
+                            {{ (results.classification.confidence * 100)|int }}%
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Risk Level:</div>
+                        <div class="info-value">
+                            <span
+                                class="{% if results.risk_assessment.risk_level == 'high' or results.risk_assessment.risk_level == 'very_high' %}high-risk{% elif results.risk_assessment.risk_level == 'moderate' %}moderate-risk{% else %}low-risk{% endif %}"
+                            >
+                                {{ results.risk_assessment.risk_level|title }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Primary Coverage:</div>
+                        <div class="info-value">
+                            {{
+                            results.policy_analysis.primary_coverage|replace('_',
+                            ' ')|title }}
+                        </div>
+                    </div>
+                    {% if results.explanation %}
+                    <div class="info-row">
+                        <div class="info-label">Summary:</div>
+                        <div class="info-value">
+                            {{ results.explanation.summary }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Scenario Section -->
+            <div class="section">
+                <h2 class="section-title">Scenario Details</h2>
+                <div class="scenario-text">{{ results.scenario_text }}</div>
+                <div class="info-row">
+                    <div class="info-label">Classification Reasoning:</div>
+                    <div class="info-value">
+                        {{ results.classification.reasoning }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Assessment Section -->
+            <div class="section">
+                <h2 class="section-title">Risk Assessment</h2>
+                <div class="card">
+                    <p>
+                        <strong>Risk Score:</strong> {{
+                        results.risk_assessment.risk_score }}
+                    </p>
+
+                    <h3>Primary Concerns</h3>
+                    <ul>
+                        {% for concern in
+                        results.risk_assessment.primary_concerns %}
+                        <li>{{ concern }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <h3>Risk Factors Identified</h3>
+                    <ul>
+                        {% for factor in
+                        results.risk_assessment.identified_factors %}
+                        <li>{{ factor|replace('_', ' ')|title }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <h3>Financial Impact Estimate</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Low Estimate</th>
+                                <th>Median Estimate</th>
+                                <th>High Estimate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    ${{
+                                    '{:,.2f}'.format(results.risk_assessment.financial_impact_estimate.low_estimate)
+                                    }}
+                                </td>
+                                <td>
+                                    ${{
+                                    '{:,.2f}'.format(results.risk_assessment.financial_impact_estimate.median_estimate)
+                                    }}
+                                </td>
+                                <td>
+                                    ${{
+                                    '{:,.2f}'.format(results.risk_assessment.financial_impact_estimate.high_estimate)
+                                    }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Policy Analysis Section -->
+            <div class="section">
+                <h2 class="section-title">Policy Analysis</h2>
+                {% if results.policy_analysis.primary_coverage %}
+                <h3>Primary Coverage</h3>
+                <div class="card">
+                    <h4>
+                        {{ results.policy_analysis.primary_coverage|replace('_',
+                        ' ')|title }}
+                    </h4>
+                    {% set primary_details =
+                    results.policy_analysis.policy_details[results.policy_analysis.primary_coverage]
+                    %}
+                    <p>{{ primary_details.description }}</p>
+                    {% if primary_details.coverage_details %}
+                    <p><small>{{ primary_details.coverage_details }}</small></p>
+                    {% endif %}
+                </div>
+
+                {% if results.policy_analysis.secondary_coverage %}
+                <h3>Secondary Coverage</h3>
+                <ul>
+                    {% for coverage in
+                    results.policy_analysis.secondary_coverage %}
+                    <li>
+                        <strong>{{ coverage|replace('_', ' ')|title }}:</strong>
+                        {% if coverage in results.policy_analysis.policy_details
+                        %} {{
+                        results.policy_analysis.policy_details[coverage].description
+                        }} {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %} {% if results.policy_analysis.coverage_gaps %}
+                <h3>Coverage Gaps</h3>
+                <div class="card">
+                    <ul>
+                        {% for gap in results.policy_analysis.coverage_gaps %}
+                        <li>{{ gap.description }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %} {% else %}
+                <p>
+                    No applicable insurance policies were identified for this
+                    scenario.
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Recommendations Section -->
+            <div class="section">
+                <h2 class="section-title">Recommendations</h2>
+                {% if results.recommendations %} {% for rec in
+                results.recommendations %}
+                <div class="card priority-{{ rec.priority }}">
+                    <h3>
+                        {{ rec.action|replace('_', ' ')|title }} {{
+                        rec.policy|replace('_', ' ')|title }}
+                    </h3>
+                    <p><strong>Priority:</strong> {{ rec.priority|title }}</p>
+                    <p>{{ rec.reason }}</p>
+                    {% if rec.details %}
+                    <p>
+                        {% for key, value in rec.details.items() %}
+                        <strong>{{ key|replace('_', ' ')|title }}:</strong> {{
+                        value }}{% if not loop.last %} | {% endif %} {% endfor
+                        %}
+                    </p>
+                    {% endif %}
+                </div>
+                {% endfor %} {% else %}
+                <p>No specific recommendations at this time.</p>
+                {% endif %}
+            </div>
+
+            <!-- Detailed Explanation Section -->
+            <div class="section">
+                <h2 class="section-title">Detailed Explanation</h2>
+                {% if results.explanation and
+                results.explanation.detailed_explanation %}
+                <div class="explanation">
+                    {{ results.explanation.detailed_explanation }}
+                </div>
+                {% else %}
+                <p>No detailed explanation available.</p>
+                {% endif %}
+            </div>
+
+            <div class="footer">
+                <p>
+                    Generated by Auto Insurance Liability AI System | {{
+                    results.date }}
+                </p>
+            </div>
+        </div>
+    </body>
+</html>

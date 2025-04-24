@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% block title %}500 Server Error - Auto Insurance
+Liability AI System{% endblock %} {% block content %}
+<div class="container text-center py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="error-img">
+                <img
+                    src="https://via.placeholder.com/600x300?text=500"
+                    alt="500 Error"
+                    class="img-fluid"
+                    style="max-height: 300px"
+                />
+            </div>
+            <h2 class="mt-4 mb-3">Oops! Something Went Wrong</h2>
+            <p class="lead mb-4">
+                We're experiencing some technical difficulties. Please try again
+                later or contact support if the problem persists.
+            </p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-home me-2"></i>Go to Homepage
+                </a>
+                <a
+                    href="javascript:window.history.back();"
+                    class="btn btn-outline-primary btn-lg"
+                >
+                    <i class="fas fa-arrow-left me-2"></i>Go Back
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

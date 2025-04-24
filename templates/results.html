@@ -1,0 +1,316 @@
+{% extends "base.html" %} {% block title %}Analysis Results - Auto Insurance
+Liability AI System{% endblock %} {% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="mb-3">
+            <i class="fas fa-chart-pie me-2"></i>Analysis Results
+        </h2>
+        <p class="lead">
+            Case ID: {{ results.case_id }} | Date: {{ results.date }}
+        </p>
+    </div>
+    <div class="col-auto">
+        <div class="btn-group">
+            <a href="{{ url_for('generate_pdf') }}" class="btn btn-primary">
+                <i class="fas fa-file-pdf me-2"></i>Generate PDF Report
+            </a>
+            <a href="{{ url_for('analyze') }}" class="btn btn-outline-primary">
+                <i class="fas fa-search me-2"></i>New Analysis
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Card -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i>Summary</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Classification</h5>
+                <p>
+                    <strong>Category:</strong> {{
+                    results.classification.category|replace('_', ' ')|title }}
+                </p>
+                <p>
+                    <strong>Confidence:</strong> {{
+                    (results.classification.confidence * 100)|int }}%
+                </p>
+                <p>
+                    <strong>Relevant Policies:</strong>
+                    {% for policy in results.classification.relevant_policies %}
+                    <span class="badge bg-info"
+                        >{{ policy|replace('_', ' ')|title }}</span
+                    >
+                    {% endfor %}
+                </p>
+            </div>
+            <div class="col-md-6">
+                <h5>Risk Assessment</h5>
+                <p>
+                    <strong>Risk Level:</strong>
+                    <span
+                        class="risk-badge {{ results.risk_assessment.risk_level }}"
+                    >
+                        {{ results.risk_assessment.risk_level|title }}
+                    </span>
+                </p>
+                <p>
+                    <strong>Risk Score:</strong> {{
+                    results.risk_assessment.risk_score }}
+                </p>
+                {% if results.explanation %}
+                <p>
+                    <strong>Summary:</strong> {{ results.explanation.summary }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Scenario Details -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-file-alt me-2"></i>Scenario Details
+                </h4>
+            </div>
+            <div class="card-body">
+                <div
+                    class="scenario-text p-3 bg-light rounded mb-3"
+                    style="max-height: 300px; overflow-y: auto"
+                >
+                    {{ results.scenario_text|replace('\n', '<br />')|safe }}
+                </div>
+
+                <h5>Classification Reasoning</h5>
+                <p>{{ results.classification.reasoning }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk Assessment -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Risk
+                    Assessment
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>Primary Concerns</h5>
+                    <ul class="mb-0">
+                        {% for concern in
+                        results.risk_assessment.primary_concerns %}
+                        <li>{{ concern }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="mb-4">
+                    <h5>Risk Factors Identified</h5>
+                    <ul class="mb-0">
+                        {% for factor in
+                        results.risk_assessment.identified_factors %}
+                        <li>{{ factor|replace('_', ' ')|title }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div>
+                    <h5>Financial Impact Estimate</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Low Estimate</th>
+                                    <th>Median Estimate</th>
+                                    <th>High Estimate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        ${{
+                                        '{:,.2f}'.format(results.risk_assessment.financial_impact_estimate.low_estimate)
+                                        }}
+                                    </td>
+                                    <td class="table-primary">
+                                        ${{
+                                        '{:,.2f}'.format(results.risk_assessment.financial_impact_estimate.median_estimate)
+                                        }}
+                                    </td>
+                                    <td>
+                                        ${{
+                                        '{:,.2f}'.format(results.risk_assessment.financial_impact_estimate.high_estimate)
+                                        }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Policy Analysis -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>Policy Analysis
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if results.policy_analysis.primary_coverage %}
+                <div class="mb-4">
+                    <h5>Primary Coverage</h5>
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                {{
+                                results.policy_analysis.primary_coverage|replace('_',
+                                ' ')|title }}
+                            </h6>
+                            {% if results.policy_analysis.primary_coverage in
+                            results.policy_analysis.policy_details %} {% set
+                            primary_details =
+                            results.policy_analysis.policy_details[results.policy_analysis.primary_coverage]
+                            %}
+                            <p class="card-text">
+                                {{ primary_details.description }}
+                            </p>
+                            {% if primary_details.coverage_details %}
+                            <p class="card-text small mb-0">
+                                {{ primary_details.coverage_details }}
+                            </p>
+                            {% endif %} {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if results.policy_analysis.secondary_coverage %}
+                <div class="mb-4">
+                    <h5>Secondary Coverage</h5>
+                    <ul class="list-group">
+                        {% for coverage in
+                        results.policy_analysis.secondary_coverage %}
+                        <li class="list-group-item">
+                            <strong
+                                >{{ coverage|replace('_', ' ')|title }}:</strong
+                            >
+                            {% if coverage in
+                            results.policy_analysis.policy_details %} {{
+                            results.policy_analysis.policy_details[coverage].description
+                            }} {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %} {% if results.policy_analysis.coverage_gaps %}
+                <div>
+                    <h5>Coverage Gaps</h5>
+                    <div class="alert alert-warning">
+                        <ul class="mb-0">
+                            {% for gap in results.policy_analysis.coverage_gaps
+                            %}
+                            <li>{{ gap.description }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %} {% else %}
+                <p>
+                    No applicable insurance policies were identified for this
+                    scenario.
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Recommendations
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if results.recommendations %}
+                <div class="list-group">
+                    {% for rec in results.recommendations %}
+                    <div
+                        class="list-group-item list-group-item-action flex-column align-items-start priority-{{ rec.priority }}"
+                    >
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">
+                                {{ rec.action|replace('_', ' ')|title }} {{
+                                rec.policy|replace('_', ' ')|title }}
+                            </h5>
+                            <small
+                                class="text-uppercase fw-bold {{ 'text-danger' if rec.priority == 'high' else ('text-warning' if rec.priority == 'medium' else 'text-success') }}"
+                            >
+                                {{ rec.priority }} Priority
+                            </small>
+                        </div>
+                        <p class="mb-1">{{ rec.reason }}</p>
+                        {% if rec.details %}
+                        <small class="text-muted">
+                            {% for key, value in rec.details.items() %}
+                            <strong>{{ key|replace('_', ' ')|title }}:</strong>
+                            {{ value }}{% if not loop.last %} | {% endif %} {%
+                            endfor %}
+                        </small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>No specific recommendations at this time.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Explanation -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h4 class="mb-0">
+            <i class="fas fa-comment-alt me-2"></i>Detailed Explanation
+        </h4>
+    </div>
+    <div class="card-body">
+        {% if results.explanation and results.explanation.detailed_explanation
+        %}
+        <div class="explanation p-3 bg-light rounded">
+            {{ results.explanation.detailed_explanation|replace('\n', '<br />')|safe
+            }}
+        </div>
+        {% else %}
+        <p>No detailed explanation available.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="d-flex justify-content-between">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+    <a href="{{ url_for('generate_pdf') }}" class="btn btn-primary">
+        <i class="fas fa-file-pdf me-2"></i>Generate PDF Report
+    </a>
+</div>
+{% endblock %}
